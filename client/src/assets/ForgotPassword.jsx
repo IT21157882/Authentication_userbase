@@ -1,12 +1,11 @@
 import { useState } from "react";
 import React from "react";
 import axios from "axios";
-import { Link, useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
-function Login() {
+function ForgotPassword() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   axios.defaults.withCredentials = true;
@@ -15,14 +14,10 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .post('http://localhost:3001/login', { email, password })
+      .post('http://localhost:3001/forgot-password', { email })
       .then((res) => {
         if (res.data.status === "success") {
-          if (res.data.role === "Admin") {
-            navigate("/dashboard");
-          } else {
-            navigate("/home");
-          }
+            navigate("/login");
         }
       })
       .catch((err) => console.log(err));
@@ -33,7 +28,7 @@ function Login() {
       <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
         <div className="w-25 bg-white rounded p-3">
           <form onSubmit={handleSubmit}>
-            <h1 className="text-center display-5">Login</h1>
+            <h1 className="text-center display-5">Forgot Password</h1>
             <div className="form-group">
               <label>Email</label>
               <input
@@ -42,27 +37,12 @@ function Login() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                className="form-control"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
             <div className="form-group text-center">
               <button type="submit" className="btn btn-success text-center mt-3">
-                Login
+                Sent
               </button>
             </div>
           </form>
-          <div className="form-group text-center mt-2">
-            <p>
-              You haven't account, <Link to="/Signup/">Sign up here</Link>.
-            </p>
-            <br></br>
-            <Link to="/Forgot-Password"> ForGot Passsword </Link>
-          </div>
         </div>
       </div>
     
@@ -70,4 +50,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default ForgotPassword;

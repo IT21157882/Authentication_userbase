@@ -5,6 +5,8 @@ import Signup from "./Signup";
 import Login from "./Login";
 import Home from "./Home";
 import Dashboard from "./Dashboard";
+import ForgotPassword from "./ForgotPassword";
+import Resetpassword from "./Resetpassword";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -18,6 +20,8 @@ function App() {
           <Route path="/login" element={<Login />}></Route>
           <Route path="/home" element={<Home />}></Route>
           <Route path="/dashboard" element={<Dashboard />}></Route>
+          <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+          <Route path="/reset-password:id/:token" element={<Resetpassword />}></Route>
         </Routes>
       </BrowserRouter>
     </div>

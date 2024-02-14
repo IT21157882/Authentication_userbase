@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const userModel = require('./models/users');
+const nodemailer = require('nodemailer');
 
 const app = express();
 
@@ -101,3 +102,64 @@ app.post('/login', async (req, res) => {
 app.listen(3001, () => {    // listen on port 5000
     console.log('Server is running');
 })
+
+
+app.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    userModel.findOne({ email: email })
+    .then(users => {
+        if(!users){
+            return res.send({Status: "User doesn't exist"});
+        }
+        const token = jwt.sign({id: users._id}, "jwt-secret-key", {expiresIn: "1h"})
+
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: { 
+              user: 'kdanahgkd@gmail.com',
+              pass: 'ddox xrji bjqs cjvj'
+            }
+          });
+          
+          var mailOptions = {
+            from: 'kdanahgkd@gmail.com',
+            to: 'dananjayakushan777@gmail.com',
+            subject: 'Reset Your Password',
+            text: `http://localhost:5173/reset-password/${users._id}/${token}`
+          };
+          
+          transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+            } else {
+              return res.send({Status: "Email sent"});
+            }
+          });
+           
+    });
+    
+     
+})
+
+app.post('/reset-password/:id/:token', async (req, res) => {
+    const { id, token } = req.params;
+    const { password } = req.body;
+    jwt.verify(token, "jwt-secret-key", (err, decoded) => {
+        if(err){
+            return res.send({Status: "Token is invalid"});
+        } else {
+            bcrypt.hash(password, 10)
+            .then((hash) => {
+                userModel.findByIdAndUpdate({_id: id}, {password: hash})
+                .then(u => res.send({Status: "Password updated"}))
+                .catch(err => res.send({Status: err}))
+
+        })
+        .catch(err => res.send({Status: err}))
+    }
+       
+})
+})
+
+
+
